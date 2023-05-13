@@ -265,9 +265,10 @@ INNER JOIN actor_awards aa ON a.actor_id = aa.actor_id
 INNER JOIN actor_film_count afc ON a.actor_id = afc.actor_id;
 ```
 ## OUTPUT
-|**one_award_total**|**one_award_with_film**|**two_awards_tota**l**two_awards_with_film**|**three_awards_total**|**three_awards_with_film**|**total_actors|
+
+|**one_award_total**|**one_award_with_film**|**two_awards_tota**|**two_awards_with_film**|**three_awards_total**|**three_awards_with_film**|**total_actors**
 |--------|--------|-------------|--------|--------|-------------|---------|
-135|	135|	0	|0	|0	|0|	135
+|135     |   	 135|	          0	|      0 |      0	|            0|	     135|
 
 
 
