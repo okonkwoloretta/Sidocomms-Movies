@@ -1,5 +1,6 @@
-Question 1. my partner and i want to come by each of the stores in person and meet the managers. 
-please send over the managers names at each stores, wih the full address of the property(street address, district,city, and country please)
+## Question 1. 
+My partner and i want to come by each of the stores in person and meet the managers. 
+Please send over the managers names at each stores, wih the full address of the property(street address, district,city, and country please)
 
 * Using the 'CONCAT_WS' function to concatenate the address fields with appropriate delimiters (comma and space) to form the full address and full name
 
@@ -15,3 +16,9 @@ JOIN country co
 JOIN staff s 
   ON st.store_id = s.store_id 
 ```
+## OUTPUT
+
+|**manager_name**|**full_address**
+|----------------|--------------
+  Jon Stephens	 | 28 MySQL Boulevard, Woodridge, Australia
+  Mike Hillyer	 | 47 MySakila Drive, Lethbridge, Canada
