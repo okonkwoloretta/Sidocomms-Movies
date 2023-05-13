@@ -1,3 +1,6 @@
+# Note 🗒: 
+I will only be displaying the first ten result of my query, if the output is more than 10, to save space and time
+
 ## Question 1. 
 My partner and i want to come by each of the stores in person and meet the managers. 
 Please send over the managers names at each stores, wih the full address of the property(street address, district,city, and country please)
@@ -54,20 +57,6 @@ INNER JOIN store s
 |2	|8	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
 |2	|9	|ACE GOLDFINGER	  |4.98999977111816	  |12.9899997711182
 |2	|10	|ACE GOLDFINGER	  |4.98999977111816	  |12.9899997711182
-|2	|11	|ACE GOLDFINGER	  |4.98999977111816	  |12.9899997711182
-|2	|12	|ADAPTATION HOLES |2.99000000953674	  |18.9899997711182
-|2	|13	|ADAPTATION HOLES |2.99000000953674	  |18.9899997711182
-|2	|14	|ADAPTATION HOLES	|2.99000000953674	  |18.9899997711182
-|2	|15	|ADAPTATION HOLES	|2.99000000953674	  |18.9899997711182
-|1	|16	|AFFAIR PREJUDICE	|2.99000000953674	  |26.9899997711182
-|1	|17	|AFFAIR PREJUDICE	|2.99000000953674	  |26.9899997711182
-|1	|18	|AFFAIR PREJUDICE	|2.99000000953674	  |26.9899997711182
-|1	|19	|AFFAIR PREJUDICE	|2.99000000953674	  |26.9899997711182
-|2	|20	|AFFAIR PREJUDICE	|2.99000000953674  	|26.9899997711182
-|2	|21	|AFFAIR PREJUDICE	|2.99000000953674 	|26.9899997711182
-|2	|22	|AFFAIR PREJUDICE	|2.99000000953674 	|26.9899997711182
-|2	|23	|AFRICAN EGG	    |2.99000000953674 	|22.9899997711182
-
 
 ## Question 3. 
 From the same list of films you just pulled, please roll that data up and provide a summary level overview of your inventory. 
@@ -134,3 +123,82 @@ GROUP BY s.store_id, c.name
 |2	|Foreign |50	|18.6362582745195	|2739.52996635437
 |1	|Drama	 |51	|21.9344442155626	|3553.37996292114
 |1	|Sports	 |57	|20.5789568263329	|3354.36996269226
+
+## Question 5. 
+We want to make sure you folks have a good handle on who your customers are. 
+Please provide a list of all cusomer names, which store they go to, whether or not they are currently active and their full address-street address, city and country 
+
+### Steps
+Selecting customer's first name and last name concatenated as customer_name
+store_id
+customer's active status as customer_status
+full address as a concatenated string of address, city, and country
+From the customer table, join the address table on the address_id column.
+
+From the address table, join the city table on the city_id column.
+
+From the city table, join the country table on the country_id column.
+
+From the customer table, join the store table on the store_id column.
+
+Use CASE statement to display customer status as 'Active' or 'Inactive' based on the value of the active column.
+
+Concatenate the address, city, and country columns using the CONCAT() function.
+
+Order the output by store_id and customer_name.
+
+```sql
+SELECT CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+       s.store_id,
+       CASE WHEN c.active = 1 THEN 'Active' ELSE 'Inactive' END AS customer_status,
+       CONCAT(a.address, ', ', ct.city, ', ', co.country) AS full_address
+FROM customer AS c
+JOIN address AS a ON c.address_id = a.address_id
+JOIN city AS ct ON a.city_id = ct.city_id
+JOIN country AS co ON ct.country_id = co.country_id
+JOIN store AS s ON c.store_id = s.store_id
+ORDER BY s.store_id, customer_name
+```
+## OUTPUT
+|**customer_name**|**store_id**|**customer_status**|**full_address**|
+|-----------------|------------|-------------------|----------------|
+|ADAM GOOCH	      |1	|Active	|230 Urawa Drive, Adoni, India
+|ALAN KAHN	      |1	|Active	|753 Ilorin Avenue, Emeishan, China
+|ALBERT CROUSE	  |1	|Active	|1641 Changhwa Place, Bamenda, Cameroon
+|ALICE STEWART	  |1	|Active	|1135 Izumisano Parkway, Fontana, United States
+|ALICIA MILLS	    |1	|Active	|1963 Moscow Place, Nagaon, India
+|ALLAN CORNISH	  |1	|Active	|947 Trshavn Place, Tarlac, Philippines
+|ALMA AUSTIN	    |1	|Active	|1074 Binzhou Manor, Mannheim, Germany
+|AMBER DIXON	    |1	|Active	|1029 Dzerzinsk Manor, Touliu, Taiwan
+|AMY LOPEZ	      |1	|Active	|176 Mandaluyong Place, Jhansi, India
+|ANDRE RAPP	      |1	|Active	|568 Dhule (Dhulia) Loop, Coquimbo, Chile
+
+## Question 6. 
+We would like to understand how much your customers are spending wih you, and also to know who your most valuable customers are.
+Please pull together a list of customer names, their total lifetime rentals and the sum of all payments you have collected from them
+It would be great to see this ordered on total lifetime value, with the most valuable customers at the top of the list.
+
+```sql
+SELECT c.first_name + ' ' + c.last_name AS customer_name,
+       SUM(CAST(p.amount AS decimal(10, 2))) AS total_payments,
+       COUNT(r.rental_id) AS lifetime_rentals,
+       SUM(CAST(p.amount AS decimal(10, 2)))/COUNT(r.rental_id) AS avg_payment_per_rental
+FROM customer AS c
+JOIN payment AS p ON c.customer_id = p.customer_id
+JOIN rental AS r ON c.customer_id = r.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+ORDER BY total_payments DESC
+```
+## OUTPUT
+|**customer_name**|**total_payments**|**lifetime_rentals**|**avg_payment_per_rental**|
+|-----------------|------------------|--------------------|--------------------------|
+|KARL SEAL	   |9969.75	|2025	|4.923333
+|ELEANOR HUNT	 |9960.84	|2116	|4.707391
+|CLARA SHAW	   |8214.36	|1764	|4.656666
+|RHONDA KENNEDY|7589.79	|1521	|4.990000
+|MARION SNYDER |7589.79	|1521	|4.990000
+|MARCIA DEAN	 |7374.36	|1764	|4.180476
+|WESLEY BULL	 |7104.00	|1600	|4.440000
+|TOMMY COLLAZO |7091.56	|1444	|4.911052
+|TIM CARY	     |6848.79	|1521	|4.502820
+|JUNE CARROLL	 |6424.31	|1369	|4.692702
