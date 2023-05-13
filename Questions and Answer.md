@@ -31,32 +31,32 @@ INNER JOIN staff s
 
 ## QUESTION 2. 
 I would like to get a better understanding of all the inventory that would come along wih the business. 
-Please pull together a list of each inventory item you have stocked, including the store_id number, the inventory_id, the name of the film, its rental rate and replacement.
+Please pull together a list of each inventory item you have stocked, including the store_id number, the inventory_id, the name of the film, the film's rating, its rental rate and replacement.
 
 ### Steps
 To provide a list of each inventory item with the store_id number, inventory_id, name of the film, its rental rate, and replacement cost, we need to join the inventory, film, and store tables.
 
 ```sql
-SELECT i.store_id, i.inventory_id, f.title AS film_name, f.rental_rate, f.replacement_cost
-FROM inventory i
-INNER JOIN film f 
+SELECT i.store_id, i.inventory_id, f.title AS film_name, f.rating, f.rental_rate, f.replacement_cost
+FROM [Sidocomms].[dbo].[inventory] i
+INNER JOIN [Sidocomms].[dbo].[film] f 
   ON i.film_id = f.film_id
-INNER JOIN store s 
+INNER JOIN [Sidocomms].[dbo].[store] s 
   ON i.store_id = s.store_id
  ``` 
 ## OUTPUT
-|**store_id**|**inventory_id**|**film_name**|**rental_rate**|**replacement_cost**|
-|------------|----------------|-------------|---------------|--------------------|
-|1  |1	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|1  |2	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|1	|3	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|1	|4	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|2	|5	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|2	|6	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|2	|7	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|2	|8	|ACADEMY DINOSAUR	|0.990000009536743	|20.9899997711182
-|2	|9	|ACE GOLDFINGER	  |4.98999977111816	  |12.9899997711182
-|2	|10	|ACE GOLDFINGER	  |4.98999977111816	  |12.9899997711182
+|**store_id**|**inventory_id**|**film_name**|**rating**|**rental_rate**|**replacement_cost**|
+|------------|----------------|-------------|----------|---------------|--------------------|
+|1  |1	|ACADEMY DINOSAUR	|PG|0.990000009536743	|20.9899997711182
+|1  |2	|ACADEMY DINOSAUR	|PG|0.990000009536743	|20.9899997711182
+|1	|3	|ACADEMY DINOSAUR	|PG|0.990000009536743	|20.9899997711182
+|1	|4	|ACADEMY DINOSAUR	|PG|0.990000009536743 |20.9899997711182
+|2	|5	|ACADEMY DINOSAUR	|PG|0.990000009536743	|20.9899997711182
+|2	|6	|ACADEMY DINOSAUR	|PG|0.990000009536743	|20.9899997711182
+|2	|7	|ACADEMY DINOSAUR	|PG|0.990000009536743	|20.9899997711182
+|2	|8	|ACADEMY DINOSAUR	|PG|0.990000009536743	|20.9899997711182
+|2	|9	|ACE GOLDFINGER	  |G |4.98999977111816  |12.9899997711182
+|2	|10	|ACE GOLDFINGER	  |G |4.98999977111816  |12.9899997711182
 
 ## Question 3. 
 From the same list of films you just pulled, please roll that data up and provide a summary level overview of your inventory. 
