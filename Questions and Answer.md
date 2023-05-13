@@ -174,34 +174,35 @@ ORDER BY s.store_id, customer_name
 |ANDRE RAPP	      |1	|Active	|568 Dhule (Dhulia) Loop, Coquimbo, Chile
 
 ## Question 6. 
-We would like to understand how much your customers are spending wih you, and also to know who your most valuable customers are.
+We would like to understand how much your customers are spending with you, and also to know who your most valuable customers are.
 Please pull together a list of customer names, their total lifetime rentals and the sum of all payments you have collected from them
 It would be great to see this ordered on total lifetime value, with the most valuable customers at the top of the list.
 
 ```sql
 SELECT c.first_name + ' ' + c.last_name AS customer_name,
        SUM(CAST(p.amount AS decimal(10, 2))) AS total_payments,
-       COUNT(r.rental_id) AS lifetime_rentals,
-       SUM(CAST(p.amount AS decimal(10, 2)))/COUNT(r.rental_id) AS avg_payment_per_rental
-FROM customer AS c
-JOIN payment AS p ON c.customer_id = p.customer_id
-JOIN rental AS r ON c.customer_id = r.customer_id
+       COUNT(r.rental_id) AS lifetime_rentals
+FROM [Sidocomms].[dbo].[customer] AS c
+LEFT JOIN [Sidocomms].[dbo].[payment] AS p 
+  ON c.customer_id = p.customer_id
+LEFT JOIN [Sidocomms].[dbo].[rental] AS r 
+  ON c.customer_id = r.customer_id
 GROUP BY c.customer_id, c.first_name, c.last_name
 ORDER BY total_payments DESC
 ```
 ## OUTPUT
-|**customer_name**|**total_payments**|**lifetime_rentals**|**avg_payment_per_rental**|
-|-----------------|------------------|--------------------|--------------------------|
-|KARL SEAL	   |9969.75	|2025	|4.923333
-|ELEANOR HUNT	 |9960.84	|2116	|4.707391
-|CLARA SHAW	   |8214.36	|1764	|4.656666
-|RHONDA KENNEDY|7589.79	|1521	|4.990000
-|MARION SNYDER |7589.79	|1521	|4.990000
-|MARCIA DEAN	 |7374.36	|1764	|4.180476
-|WESLEY BULL	 |7104.00	|1600	|4.440000
-|TOMMY COLLAZO |7091.56	|1444	|4.911052
-|TIM CARY	     |6848.79	|1521	|4.502820
-|JUNE CARROLL	 |6424.31	|1369	|4.692702
+|**customer_name**|**total_payments**|**lifetime_rentals**|
+|-----------------|------------------|--------------------|
+|KARL SEAL	   |9969.75	|2025	|
+|ELEANOR HUNT	 |9960.84	|2116	|
+|CLARA SHAW	   |8214.36	|1764	|
+|RHONDA KENNEDY|7589.79	|1521	|
+|MARION SNYDER |7589.79	|1521	|
+|MARCIA DEAN	 |7374.36	|1764	|
+|WESLEY BULL	 |7104.00	|1600	|
+|TOMMY COLLAZO |7091.56	|1444	|
+|TIM CARY	     |6848.79	|1521	|
+|JUNE CARROLL	 |6424.31	|1369	|
 
 ## Question 7: 
 My partner and I would like to get to know your board of advisors and any current investors.
@@ -241,35 +242,50 @@ Finally, how about actors with just one award?
 Using Common Table Expressions (CTE) to calculate the number of awards and number of films for each actor. Then using conditional aggregation to calculate the number of actors with one, two, or three awards and the number of actors in each category who have appeared in at least one film. The COUNT(DISTINCT) at the end gives the total number of actors in the data.
 
 ```sql
-WITH actor_awards AS (
-    SELECT actor_id, COUNT(DISTINCT awards) AS num_awards
-    FROM actor_award
-    GROUP BY actor_id
-), actor_film_count AS (
-    SELECT a.actor_id, COUNT(DISTINCT f.film_id) AS num_films
-    FROM actor a
-    INNER JOIN film_actor fa ON a.actor_id = fa.actor_id
-    INNER JOIN film f ON fa.film_id = f.film_id
-    GROUP BY a.actor_id
+WITH aa AS (
+  SELECT
+    COUNT(DISTINCT awards) AS award_count,
+    actor_id
+  FROM [Sidocomms].[dbo].[actor_award]
+  GROUP BY actor_id
+),
+fa AS (
+  SELECT
+    aa.actor_id,
+    COUNT(DISTINCT f.film_id) AS num_films
+  FROM aa
+  LEFT JOIN [Sidocomms].[dbo].[film_actor] fa
+    ON aa.actor_id = fa.actor_id
+  LEFT JOIN [Sidocomms].[dbo].[film] f
+    ON fa.film_id = f.film_id
+  GROUP BY aa.actor_id
 )
 SELECT
-    COUNT(DISTINCT CASE WHEN aa.num_awards = 1 THEN a.actor_id END) AS one_award_total,
-    COUNT(DISTINCT CASE WHEN aa.num_awards = 1 AND afc.num_films > 0 THEN a.actor_id END) AS one_award_with_film,
-    COUNT(DISTINCT CASE WHEN aa.num_awards = 2 THEN a.actor_id END) AS two_awards_total,
-    COUNT(DISTINCT CASE WHEN aa.num_awards = 2 AND afc.num_films > 0 THEN a.actor_id END) AS two_awards_with_film,
-    COUNT(DISTINCT CASE WHEN aa.num_awards = 3 THEN a.actor_id END) AS three_awards_total,
-    COUNT(DISTINCT CASE WHEN aa.num_awards = 3 AND afc.num_films > 0 THEN a.actor_id END) AS three_awards_with_film,
-    COUNT(DISTINCT a.actor_id) AS total_actors
-FROM actor a
-INNER JOIN actor_awards aa ON a.actor_id = aa.actor_id
-INNER JOIN actor_film_count afc ON a.actor_id = afc.actor_id;
+  COUNT(DISTINCT aa.actor_id) AS num_actors,
+  SUM(aa.award_count) AS total_awards,
+  SUM(fa.num_films) AS total_films,
+  (SUM(fa.num_films) / COUNT(DISTINCT aa.actor_id)) * 100 AS films_with_awards_percentage,
+  aa.award_count
+FROM aa
+JOIN fa
+  ON aa.actor_id = fa.actor_id
+GROUP BY aa.actor_id, aa.award_count
+ORDER BY aa.award_count;
 ```
 ## OUTPUT
 
-|**one_award_total**|**one_award_with_film**|**two_awards_tota**|**two_awards_with_film**|**three_awards_total**|**three_awards_with_film**|**total_actors**
-|--------|--------|-------------|--------|--------|-------------|---------|
-|135     |   	 135|	          0	|      0 |      0	|            0|	     135|
-
+|**num_actors**|**total_awards**|**total_films**|**films_with_awards_percentage**|**award_count**
+|--------|--------|-------------|--------|--------|
+1|	1	|19	|1900|	1
+1|	1	|22	|2200|	1
+1|	1	|24	|2400|	1
+1|	1	|33	|3300|	1
+1|	1	|41	|4100|	1
+1|	1	|30	|3000|	1
+1|	1	|42	|4200|	1
+1|	1	|34	|3400|	1
+1|	1	|22	|2200|	1
+1|	1	|25	|2500|	1
 
 
 
