@@ -18,4 +18,4 @@ The data is available in a CSV and excel file format and contains 19 columns.
 [Data Model](https://dbdocs.io/text2loreal/Sidocomms-Movies-Management-Model?view=relationships)
 
 
-## VIEW MY EXPLORATORY ANALYSIS [HERE]()
+## VIEW MY EXPLORATORY ANALYSIS [HERE](https://github.com/okonkwoloretta/Sidocomms-Movies/blob/main/Questions%20and%20Answer.md)
