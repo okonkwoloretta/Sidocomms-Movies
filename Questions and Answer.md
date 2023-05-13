@@ -202,3 +202,44 @@ ORDER BY total_payments DESC
 |TOMMY COLLAZO |7091.56	|1444	|4.911052
 |TIM CARY	     |6848.79	|1521	|4.502820
 |JUNE CARROLL	 |6424.31	|1369	|4.692702
+
+## Question 7: 
+My partner and I would like to get to know your board of advisors and any current investors.
+Could you please provide a list of advisor and investor name in one table?
+Could you please note whether they are an investor or an advisor, and for the investors, it would be good to include which company they work with.
+
+```sql
+SELECT 
+  CONCAT(a.first_name, ' ', a.last_name) AS name, 
+  'Advisor' AS role,
+  NULL AS company
+FROM advisor a
+UNION
+SELECT 
+  CONCAT(i.first_name, ' ', i.last_name) AS name, 
+  'Investor' AS role,
+  i.company_name AS company
+FROM investor i
+```
+
+## OUTPUT
+|**name**|**role**|**company**|
+|--------|--------|----------------------|
+|Anthony Stark    |	Investor|Iron Investors
+|Barry Beenthere  |	Advisor	|NULL
+|Cindy Smartypants|	Advisor	|NULL
+|Mary Moneybags	  |Advisor	|NULL
+|Montgomery Burns	|Investor	|Springfield Syndicators
+|Walter White	    |Advisor	|NULL
+|William Wonka	  |Investor	|Chocolate Ventures
+
+
+##
+
+
+
+
+
+
+
+
