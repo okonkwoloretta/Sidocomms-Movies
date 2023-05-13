@@ -86,7 +86,7 @@ INNER JOIN store s
 GROUP BY s.store_id, f.rating
 ```
 ## OUTPUT
-|**store_id**|**rating**|**inventory_count**
+|**store_id**|**rating**|**inventory_count**|
 |------------|----------|----------------|
 |1|	G    |	394
 |2|	G    |  397
@@ -98,3 +98,39 @@ GROUP BY s.store_id, f.rating
 |2| R	   |  462
 |2| PG	 |  480
 |2| PG-13|  493
+
+## Question 4. 
+Similarly, we want to understand how diversified the inventory is in terms of replacement cost. 
+We want to see how big of a hit it would if a certain category of film became unpopular at a certain store.
+We would like to see the number of films, as well as the average replacement cost, and total replacement cost, sliced by store and film category.
+
+### Steps
+We need to join the store, film, inventory, film_category and category tables and group the results by store and category. 
+Then, calculate the count of films, the average replacement cost, and the total replacement cost for each group. 
+
+```sql
+SELECT s.store_id, c.name AS category, 
+       COUNT(DISTINCT f.film_id) AS num_films,
+       AVG(f.replacement_cost) AS avg_replacement_cost,
+       SUM(f.replacement_cost) AS total_replacement_cost
+FROM store s
+JOIN inventory i ON s.store_id = i.store_id
+JOIN film f ON i.film_id = f.film_id
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id
+GROUP BY s.store_id, c.name
+```
+
+## OUTPUT
+|**store_id**|**category**|**num_films**|**avg_replacement_cost**|**total_replacement_cost**|
+|------------|------------|-------------|------------------------|--------------------------|
+|2	|Drama	 |47	|21.4610142638718	|2961.61996841431
+|1	|Horror	 |38	|19.7489283425467	|2211.87997436523
+|2	|Classics|45	|21.2921580444995	|2959.60996818542
+|1	|Comedy	 |49	|19.4407039964703	|2760.57996749878
+|1	|Foreign |50	|18.5586272220986	|2839.46996498108
+|2	|Horror	 |43	|19.5635291828829	|2660.63996887207
+|2	|Sports	 |59	|20.6971820915602	|3746.18995857239
+|2	|Foreign |50	|18.6362582745195	|2739.52996635437
+|1	|Drama	 |51	|21.9344442155626	|3553.37996292114
+|1	|Sports	 |57	|20.5789568263329	|3354.36996269226
