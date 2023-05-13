@@ -9,6 +9,7 @@ The purpose of this project is to leverage my SQL skills to extract and analyze 
 Database to answer potential Acquirer’s questions.
 
 ## Data Source
-The dataset was gotten from [twitter]() contains data from 10,000 respondents and was collected through a survey. The data is available in a CSV file format and contains 11 columns.
+The dataset was gotten from [twitter](https://twitter.com/phemmylasode/status/1656821629614276608) challenge given by Oluwafemi, OCP || Sidocomms Analytics.
+The data is available in a CSV and excel file format and contains 19 columns.
 
-VIEW MY EXPLORATORY ANALYSIS HERE
+## VIEW MY EXPLORATORY ANALYSIS [HERE]()
