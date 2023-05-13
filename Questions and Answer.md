@@ -208,36 +208,66 @@ My partner and I would like to get to know your board of advisors and any curren
 Could you please provide a list of advisor and investor name in one table?
 Could you please note whether they are an investor or an advisor, and for the investors, it would be good to include which company they work with.
 
+### Steps
+To get a list of advisors and investors with their respective roles and company names (for investors), 
+we can join the advisor and investor tables on the first_name and last_name columns
+
 ```sql
-SELECT 
-  CONCAT(a.first_name, ' ', a.last_name) AS name, 
-  'Advisor' AS role,
-  NULL AS company
-FROM advisor a
+SELECT CONCAT(first_name, ' ', last_name) AS name, 'Investor' AS type, company_name AS affiliated_company
+FROM investor
 UNION
-SELECT 
-  CONCAT(i.first_name, ' ', i.last_name) AS name, 
-  'Investor' AS role,
-  i.company_name AS company
-FROM investor i
+SELECT CONCAT(first_name, ' ', last_name) AS name, 'Advisor' AS type, '' AS affiliated_company
+FROM advisor
 ```
 
 ## OUTPUT
-|**name**|**role**|**company**|
+|**name**|**type**|**affiliated_company**|
 |--------|--------|----------------------|
 |Anthony Stark    |	Investor|Iron Investors
-|Barry Beenthere  |	Advisor	|NULL
-|Cindy Smartypants|	Advisor	|NULL
-|Mary Moneybags	  |Advisor	|NULL
+|Barry Beenthere  |	Advisor	|
+|Cindy Smartypants|	Advisor	|
+|Mary Moneybags	  |Advisor	|
 |Montgomery Burns	|Investor	|Springfield Syndicators
-|Walter White	    |Advisor	|NULL
+|Walter White	    |Advisor	|
 |William Wonka	  |Investor	|Chocolate Ventures
 
+## Question 8: 
+We're interested in how well you have covered the most-awarded actors.
+Of all the actors with three types of awards, for what % of them do we carry a film?
+And how about for actors with two types of awards? Same questions.
+Finally, how about actors with just one award?
 
-##
+### Steps
+Using Common Table Expressions (CTE) to calculate the number of awards and number of films for each actor. Then using conditional aggregation to calculate the number of actors with one, two, or three awards and the number of actors in each category who have appeared in at least one film. The COUNT(DISTINCT) at the end gives the total number of actors in the data.
 
-
-
+```sql
+WITH actor_awards AS (
+    SELECT actor_id, COUNT(DISTINCT awards) AS num_awards
+    FROM actor_award
+    GROUP BY actor_id
+), actor_film_count AS (
+    SELECT a.actor_id, COUNT(DISTINCT f.film_id) AS num_films
+    FROM actor a
+    INNER JOIN film_actor fa ON a.actor_id = fa.actor_id
+    INNER JOIN film f ON fa.film_id = f.film_id
+    GROUP BY a.actor_id
+)
+SELECT
+    COUNT(DISTINCT CASE WHEN aa.num_awards = 1 THEN a.actor_id END) AS one_award_total,
+    COUNT(DISTINCT CASE WHEN aa.num_awards = 1 AND afc.num_films > 0 THEN a.actor_id END) AS one_award_with_film,
+    COUNT(DISTINCT CASE WHEN aa.num_awards = 2 THEN a.actor_id END) AS two_awards_total,
+    COUNT(DISTINCT CASE WHEN aa.num_awards = 2 AND afc.num_films > 0 THEN a.actor_id END) AS two_awards_with_film,
+    COUNT(DISTINCT CASE WHEN aa.num_awards = 3 THEN a.actor_id END) AS three_awards_total,
+    COUNT(DISTINCT CASE WHEN aa.num_awards = 3 AND afc.num_films > 0 THEN a.actor_id END) AS three_awards_with_film,
+    COUNT(DISTINCT a.actor_id) AS total_actors
+FROM actor a
+INNER JOIN actor_awards aa ON a.actor_id = aa.actor_id
+INNER JOIN actor_film_count afc ON a.actor_id = afc.actor_id;
+```
+## OUTPUT
+|one_award_total	one_award_with_film	two_awards_total	two_awards_with_film	three_awards_total	three_awards_with_film	total_actors
+|--------|--------|-------------------
+135	135	0	0	0	0	135
 
 
 
